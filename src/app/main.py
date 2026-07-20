@@ -7,6 +7,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from app.analysis.repository import HistoryRepository
+from app.api.routes import analyze as analyze_routes
 from app.api.routes import ask as ask_routes
 from app.config import get_settings
 from app.llm.client import LLMClient
@@ -33,6 +35,7 @@ async def lifespan(app: FastAPI):
         directory=settings.chroma_dir,
         collection_name=settings.chroma_collection,
     )
+    app.state.history = HistoryRepository(settings.workout_history_path)
     logger.info(
         "started | model=%s embedding=%s chunks=%d",
         settings.llm_model_name,
@@ -52,8 +55,8 @@ app = FastAPI(
 
 
 app.include_router(ask_routes.router)
-# Mounted in later phases:
-#   /analyze  -> Feature 2 (workout history analysis)
+app.include_router(analyze_routes.router)
+# Mounted in a later phase:
 #   /agent    -> Feature 3 (coach assist agent)
 
 

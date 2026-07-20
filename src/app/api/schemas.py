@@ -34,6 +34,41 @@ class UsageModel(BaseModel):
     estimated_cost_usd: float
 
 
+class WorkoutSet(BaseModel):
+    reps: int
+    weight: float
+    unit: str = "kg"
+
+
+class WorkoutEntry(BaseModel):
+    date: str = Field(..., description="ISO date, e.g. 2026-03-20.")
+    exercise: str
+    sets: list[WorkoutSet]
+
+
+class AnalyzeRequest(BaseModel):
+    question: str = Field(..., min_length=3, max_length=1000)
+    user_id: str | None = Field(
+        default=None,
+        description="Load a stored user's history. Mutually exclusive with `workouts`.",
+    )
+    workouts: list[WorkoutEntry] | None = Field(
+        default=None,
+        description="Inline workout history. Mutually exclusive with `user_id`.",
+    )
+
+
+class AnalyzeResponse(BaseModel):
+    status: Literal["answered", "insufficient_data"]
+    insight: str
+    data_points_used: list[str]
+    summary: dict | None = Field(
+        default=None,
+        description="The deterministic pre-computed summary the insight was based on.",
+    )
+    usage: "UsageModel"
+
+
 class AskResponse(BaseModel):
     status: Literal["answered", "out_of_scope", "refused"] = Field(
         ...,
