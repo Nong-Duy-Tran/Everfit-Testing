@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -33,10 +35,22 @@ class UsageModel(BaseModel):
 
 
 class AskResponse(BaseModel):
+    status: Literal["answered", "out_of_scope", "refused"] = Field(
+        ...,
+        description=(
+            "answered: grounded answer with sources. "
+            "out_of_scope: not a fitness question, no generation ran. "
+            "refused: blocked by the safety guardrail (see refusal_category)."
+        ),
+    )
     answer: str
     sources: list[SourceModel]
     in_scope: bool = Field(
         ...,
-        description="False when the question was out of scope; no generation ran and sources is empty.",
+        description="True only when status is 'answered'. Kept for convenience.",
+    )
+    refusal_category: str | None = Field(
+        default=None,
+        description="medical_diagnosis | injury_rehab | eating_disorder when refused, else null.",
     )
     usage: UsageModel

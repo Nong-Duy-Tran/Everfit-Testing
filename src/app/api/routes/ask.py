@@ -8,6 +8,7 @@ from fastapi import APIRouter, HTTPException, Request
 
 from app.api.schemas import AskRequest, AskResponse
 from app.config import get_settings
+from app.guardrail.classifier import Guardrail
 from app.rag.answer import RagAnswerer
 
 logger = logging.getLogger(__name__)
@@ -32,7 +33,17 @@ async def ask(payload: AskRequest, request: Request) -> AskResponse:
             ),
         )
 
-    answerer = RagAnswerer(client=request.app.state.llm, store=store, settings=settings)
+    guardrail = (
+        Guardrail(client=request.app.state.llm, settings=settings)
+        if settings.guardrail_enabled
+        else None
+    )
+    answerer = RagAnswerer(
+        client=request.app.state.llm,
+        store=store,
+        settings=settings,
+        guardrail=guardrail,
+    )
     try:
         result = await answerer.answer(payload.question)
     except Exception:
