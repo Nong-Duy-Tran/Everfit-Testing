@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 from dataclasses import dataclass
 
 from app.config import Settings, get_settings
+from app.guardrail.classifier import Guardrail
 from app.llm.client import LLMClient, Usage
 from app.rag.store import RetrievedChunk, VectorStore
 
@@ -73,18 +75,31 @@ class Source:
 
 @dataclass
 class AnswerResult:
+    # answered | out_of_scope | refused
+    status: str
     answer: str
     sources: list[Source]
-    in_scope: bool
     usage: Usage
+    refusal_category: str | None = None
+
+    @property
+    def in_scope(self) -> bool:
+        """Kept for the API contract: true only when a grounded answer was produced."""
+        return self.status == "answered"
 
     def as_dict(self, settings: Settings) -> dict[str, object]:
         return {
+            "status": self.status,
             "answer": self.answer,
             "sources": [s.as_dict() for s in self.sources],
             "in_scope": self.in_scope,
+            "refusal_category": self.refusal_category,
             "usage": self.usage.as_dict(settings),
         }
+
+
+async def _first_embedding(client: LLMClient, text: str, usage: Usage) -> list[float]:
+    return (await client.embed([text], usage=usage))[0]
 
 
 def _format_context(chunks: list[RetrievedChunk]) -> str:
@@ -101,16 +116,37 @@ class RagAnswerer:
         client: LLMClient,
         store: VectorStore,
         settings: Settings | None = None,
+        guardrail: Guardrail | None = None,
     ) -> None:
         self._client = client
         self._store = store
         self._settings = settings or get_settings()
+        self._guardrail = guardrail
 
     async def answer(self, question: str) -> AnswerResult:
         settings = self._settings
         usage = Usage()
 
-        query_vector = (await self._client.embed([question], usage=usage))[0]
+        # Safety classification and embedding are independent, so run them
+        # together — the guardrail then adds no latency on the happy path. The
+        # guardrail runs before the relevance check on purpose: an unsafe
+        # question is topically in scope, so similarity would let it through.
+        if self._guardrail is not None:
+            verdict, query_vector = await asyncio.gather(
+                self._guardrail.classify(question, usage=usage),
+                _first_embedding(self._client, question, usage),
+            )
+            if not verdict.allowed:
+                return AnswerResult(
+                    status="refused",
+                    answer=verdict.message or "",
+                    sources=[],
+                    usage=usage,
+                    refusal_category=verdict.category_value,
+                )
+        else:
+            query_vector = await _first_embedding(self._client, question, usage)
+
         chunks = self._store.search(query_vector, top_k=settings.retrieval_top_k)
 
         best = chunks[0].similarity if chunks else 0.0
@@ -122,9 +158,9 @@ class RagAnswerer:
                 best, settings.relevance_threshold, question,
             )
             return AnswerResult(
+                status="out_of_scope",
                 answer=OUT_OF_SCOPE_MESSAGE,
                 sources=[],
-                in_scope=False,
                 usage=usage,
             )
 
@@ -163,4 +199,4 @@ class RagAnswerer:
             )
             for i, c in enumerate(chunks, start=1)
         ]
-        return AnswerResult(answer=answer, sources=sources, in_scope=True, usage=usage)
+        return AnswerResult(status="answered", answer=answer, sources=sources, usage=usage)

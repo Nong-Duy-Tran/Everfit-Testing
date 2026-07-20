@@ -40,6 +40,11 @@ class Settings(BaseSettings):
     # rather than answering from weak context. Tuned in Phase 5 against the eval set.
     relevance_threshold: float = 0.35
 
+    # --- Guardrails ---
+    # Safety classifier runs concurrently with embedding, so it adds no latency
+    # on the happy path. Toggle for the eval pipeline's guardrail-off baseline.
+    guardrail_enabled: bool = True
+
     # --- Generation ---
     request_timeout_s: float = 60.0
     max_retries: int = 2
