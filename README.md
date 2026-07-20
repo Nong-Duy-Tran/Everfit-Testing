@@ -5,9 +5,8 @@ knowledge base, analyses a user's training history, and helps coaches with
 multi-step questions through a tool-calling agent — with guardrails for a
 health-adjacent context.
 
-> **Status:** Feature 1 (knowledge RAG + guardrails) and Feature 2 (workout
-> history analysis) complete. Feature 3 (coach-assist agent) and Feature 4
-> (evaluation) land in subsequent phases.
+All four features are implemented, tested (59 tests), and evaluated
+(`EVALUATION.md`). Runs with a single `docker compose up`.
 
 ## Time estimate
 
@@ -29,6 +28,55 @@ weights AI-adoption evidence equally with technical output.
 Gateway capabilities were **verified by probe**, not assumed — native
 tool-calling, parallel tool-calling, and strict `json_schema` structured outputs
 all work. See `AI_WORKFLOW.md`.
+
+## Architecture
+
+```mermaid
+flowchart TB
+    subgraph API["FastAPI (app/api)"]
+        ask["POST /ask"]
+        analyze["POST /analyze"]
+        agent["POST /agent"]
+    end
+
+    subgraph F1["Feature 1 — RAG (app/rag)"]
+        guardrail["Guardrail\nintent classifier"]
+        retriever["Vector search\n(Chroma, cosine)"]
+        answerer["Grounded answer\n(structured, cited)"]
+    end
+
+    subgraph F2["Feature 2 — Analysis (app/analysis)"]
+        repo["History repository\n(user isolation)"]
+        analytics["Analytics\n(deterministic:\nunits, e1RM, balance)"]
+        insight["Insight\n(interprets summary)"]
+    end
+
+    subgraph F3["Feature 3 — Agent (app/agent)"]
+        loop["Tool-calling loop\n(registry-driven)"]
+    end
+
+    LLM["LLM gateway\n(nxchat + nx-text-embedding\nvia AsyncOpenAI)"]
+
+    ask --> guardrail --> retriever --> answerer
+    guardrail -.refuse.-> ask
+    analyze --> repo --> analytics --> insight
+    agent --> loop
+    loop -->|rag_search| F1
+    loop -->|analyze_history| F2
+
+    answerer --> LLM
+    insight --> LLM
+    guardrail --> LLM
+    retriever --> LLM
+    loop --> LLM
+```
+
+**The consistent shape:** a deterministic layer does the work that must be
+correct (retrieval, unit-normalised stats, tool dispatch), and the LLM is used
+only where judgement is needed (grounded phrasing, interpretation, tool
+selection). The agent reuses Features 1 and 2 as tools rather than
+reimplementing them — including Feature 1's guardrail, so unsafe agent
+sub-queries are refused the same way a direct `/ask` is.
 
 ## Setup
 
@@ -78,7 +126,8 @@ Interactive API docs at `/docs` when the server is running.
 
 - [`AI_WORKFLOW.md`](AI_WORKFLOW.md) — how AI tools were used, what they got wrong, and how it was corrected
 - [`docs/GUARDRAILS.md`](docs/GUARDRAILS.md) — safety refusal strategy: triggers, messages, and how over-restriction is avoided
-- `EVALUATION.md` — test set, metric results, failure analysis _(Phase 5)_
+- [`EVALUATION.md`](EVALUATION.md) — 15-case test set, metric results, and failure analysis
+- [`docs/METERING.md`](docs/METERING.md) — bonus: how per-query billing would be added
 
 ## Coach-assist agent (Feature 3)
 
@@ -115,7 +164,70 @@ at the tool boundary (`insufficient_data` is a distinct status the prompt is tol
 to respect), but a determined model can still over-read thin data. This is the
 same class of risk flagged for Feature 2 in `EVALUATION.md`.
 
-## Design decisions
+## Cost per query
 
-_Expanded per phase. Architecture diagram and the cost-per-query estimate at
-1,000 queries/day land in the final documentation pass._
+Every gateway call threads a `Usage` accumulator, so these are **measured token
+counts**, not estimates. The gateway publishes no pricing, so per-token rates
+assume OpenAI's small-model tier (`gpt-4o-mini`: $0.15/1M input, $0.60/1M output;
+`text-embedding-3-small`: $0.02/1M) — declared as constants in `config.py`, so
+one edit re-prices everything.
+
+| Feature | Avg tokens (in / out / embed) | LLM calls | Cost/query | At 1,000/day |
+|---|---|---|---|---|
+| Feature 1 `/ask` | ~1030 / 190 / 11 | 2 (guardrail + answer) | **$0.00027** | **~$0.27/day** |
+| Feature 2 `/analyze` | ~1990 / 285 / 0 | 1 (insight; stats are deterministic) | **$0.00047** | **~$0.47/day** |
+
+Combined, both features at 1,000 queries/day each is **well under $1/day** at
+this tier. (`/agent` is higher — 2 planning calls plus the tool sub-calls it
+triggers, ~$0.002/query — but the brief asks specifically about Features 1 and 2.)
+
+**What I'd optimise first:** the guardrail adds a classification call to every
+`/ask`. It runs concurrently with the embedding so it costs no latency, but it is
+~15% of Feature 1's tokens. The measured, honest options (analysed in
+`AI_WORKFLOW.md`): fold safety into the answer call (one call instead of two), or
+cascade — a free embedding-based pre-filter that only escalates ambiguous cases
+to the LLM. Feature 2's larger input is the computed summary; trimming it to only
+the exercises a question references would cut its input tokens materially.
+
+## Production thinking
+
+- **Error handling** — upstream gateway failures return `502` with a generic
+  message (internals never leak); unknown users `404`; bad requests `400`;
+  malformed model output degrades to a safe fallback rather than a `500`.
+- **Data isolation** — enforced structurally: the history repository exposes only
+  `get(user_id)` and has no bulk accessor, so one user's data cannot reach
+  another's context. Tested directly.
+- **Cost/latency awareness** — usage is measured per request and returned in every
+  response; the guardrail is run concurrently with embedding to hide its latency.
+- **Logging** — structured, with third-party clients quieted so request bodies and
+  prompts aren't echoed to stdout at `LOG_LEVEL=debug`.
+- **Determinism where it matters** — units, e1RM, balance, and tool dispatch are
+  pure Python and unit-tested; the LLM never does arithmetic.
+
+## Design decisions & tradeoffs
+
+- **No agent framework (justified).** For two tools and one level of delegation, a
+  native function-calling loop is ~120 lines and keeps the tool-selection
+  reasoning visible. Frameworks (LangGraph, LangChain v1's `create_agent` +
+  middleware, PocketFlow) earn their weight on capabilities this system doesn't
+  have yet — streaming to a UI, multi-turn persistence, write-tool approval gates,
+  multi-agent orchestration. Notably, the guardrail-before-answer and tool-status
+  hooks I hand-built map cleanly onto LangChain middleware — a sign the seams are
+  right and the design is straightforward to lift into a framework later.
+- **Retrieval is plain top-k.** Per-document capping and MMR were both measured and
+  rejected — neither can read query intent, which is the signal that actually
+  separates a broad deep-dive from a multi-topic question. See `EVALUATION.md` and
+  `AI_WORKFLOW.md`.
+- **Safety is a separate intent classifier, not the relevance threshold.** A
+  medical question is topically in-scope, so similarity cannot catch it. See
+  `docs/GUARDRAILS.md`.
+- **Analysis pre-processes before the LLM.** Only a computed summary reaches the
+  model, never raw sets — the brief's core requirement for Feature 2, and it makes
+  a rule-based grounding metric possible.
+
+## Testing
+
+```bash
+PYTHONPATH=src .venv/bin/python -m pytest        # 59 tests, no network required
+PYTHONPATH=src .venv/bin/python scripts/evaluate.py   # full eval against live gateway
+```
