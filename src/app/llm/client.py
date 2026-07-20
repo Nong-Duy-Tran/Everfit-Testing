@@ -41,6 +41,14 @@ class Usage:
         self.calls += 1
         self.embedding_tokens += tokens
 
+    def merge(self, other: "Usage") -> None:
+        """Fold another operation's usage in — e.g. a tool call's cost into the
+        agent's running total, so agent usage reflects the whole tool chain."""
+        self.prompt_tokens += other.prompt_tokens
+        self.completion_tokens += other.completion_tokens
+        self.embedding_tokens += other.embedding_tokens
+        self.calls += other.calls
+
     def cost_usd(self, s: Settings) -> float:
         return (
             self.prompt_tokens / 1e6 * s.usd_per_1m_input
