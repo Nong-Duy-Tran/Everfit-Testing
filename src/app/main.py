@@ -7,8 +7,10 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from app.api.routes import ask as ask_routes
 from app.config import get_settings
 from app.llm.client import LLMClient
+from app.rag.store import VectorStore
 
 settings = get_settings()
 logging.basicConfig(
@@ -17,15 +19,25 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# LOG_LEVEL=debug is for *our* code. Third-party clients at DEBUG dump full
+# request bodies and response headers, which buries application logs and risks
+# echoing prompt content into stdout.
+for noisy in ("httpx", "httpcore", "openai", "chromadb"):
+    logging.getLogger(noisy).setLevel(max(logging.INFO, logger.getEffectiveLevel()))
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.llm = LLMClient(settings)
+    app.state.store = VectorStore(
+        directory=settings.chroma_dir,
+        collection_name=settings.chroma_collection,
+    )
     logger.info(
-        "started | model=%s embedding=%s base_url=%s",
+        "started | model=%s embedding=%s chunks=%d",
         settings.llm_model_name,
         settings.text_embedding_model_name,
-        settings.base_url,
+        app.state.store.count(),
     )
     yield
     await app.state.llm.aclose()
@@ -39,12 +51,16 @@ app = FastAPI(
 )
 
 
-@app.get("/health", tags=["ops"])
-async def health() -> dict[str, str]:
-    return {"status": "ok", "model": settings.llm_model_name}
-
-
-# Feature routers are mounted in later phases:
-#   /ask      -> Feature 1 (RAG + guardrails)
+app.include_router(ask_routes.router)
+# Mounted in later phases:
 #   /analyze  -> Feature 2 (workout history analysis)
 #   /agent    -> Feature 3 (coach assist agent)
+
+
+@app.get("/health", tags=["ops"])
+async def health() -> dict[str, object]:
+    return {
+        "status": "ok",
+        "model": settings.llm_model_name,
+        "indexed_chunks": app.state.store.count(),
+    }
