@@ -218,3 +218,65 @@ hidden.
 - **Two adversarial cases are carried into the eval set**, one guarding each
   direction of the boundary: an allow-case that must not be blocked, and a
   diagnosis-phrased-as-training case that must be. See `docs/GUARDRAILS.md`.
+
+### Researching the "no second LLM call" question
+
+The user asked whether the guardrail could avoid a dedicated classification call.
+Rather than answer from intuition, I researched it: I built exemplar embeddings
+per category and tested classifying the query by nearest-exemplar using the
+vector already computed for retrieval — a genuinely zero-extra-cost approach. It
+scored 13/15, and both failures were false refusals (over-blocking "what should
+I eat before a workout?" as eating-disorder content). Crucially, the confidence
+margins overlapped between right and wrong answers — a truly unsafe "felt a pop
+in my knee" was *less* confident than a false-positive — which proves no margin
+threshold can make embedding-only classification safe. That measurement turned a
+"maybe we can drop the call" hunch into a documented finding, and the user chose
+to keep the LLM classifier with the tradeoff understood. The merge-vs-cascade
+options are written up for EVALUATION.md.
+
+---
+
+## Phase 3 — Feature 2: workout history analysis
+
+### The design was driven by reading the data as an answer key
+
+Before writing the analytics layer, I profiled both sample users. This is where
+the "full context upfront" prompting paid off again: the data is engineered so
+that the brief's four example questions have verifiable answers. User A shows
+real progressive overload (bench e1RM +17.9%, balanced push/pull/legs); user B
+is chest-dominant (push:pull 8.67, chest:back 10.34), skips legs, and — the
+detail that shaped the whole module — mixes kg and lb *within one user*. So the
+analytics layer was built to the data, not to a generic spec, and the tests
+assert the specific answer-key numbers rather than just "returns a number".
+
+### The correctness gate that would have silently produced wrong answers
+
+The AI's default when building trend analysis is to treat `weight` as a bare
+number. On this data that is a latent bug: user B's opening bench is 110 **lb**.
+Left unconverted it reads as 110 kg — heavier than his later kg sessions — so
+his single most-improved lift would report as *declining*. The insight would be
+fluent, cited, and wrong. Unit normalisation to kg at parse time is therefore a
+correctness gate, not an edge case, and it has a dedicated test
+(`test_units_are_normalised_to_kg`) plus a runtime warning surfaced in the
+summary. This is the kind of error that never appears in a design review and
+only shows up if you actually run the numbers against the real file.
+
+### Enforcing isolation structurally rather than by convention
+
+The brief requires that one user's history never appears in another's context.
+The tempting implementation is a store with an `all()` accessor and a discipline
+of "only pass the right slice." I made it structural instead: the repository's
+only accessor is `get(user_id)`, there is deliberately no `all()`/`get_all()`,
+and analysis is pure over whatever list `get()` returns. A test asserts the
+absence of a bulk accessor, so the guarantee can't be eroded by a future
+convenience method. That is a stronger guarantee than a passing data-flow test,
+because it removes the capability to leak rather than checking one path doesn't.
+
+### Pre-processing keeps the LLM's job small — and honest
+
+Only the computed summary reaches the model (trends, ratios, gaps), never the
+raw sets. The model interprets numbers that are already correct and lists them
+in `data_points_used`; it does no arithmetic. This is the brief's "aggregation
+and trend detection vs raw dump" requirement, and it has a second benefit for
+Feature 4: because the numbers are deterministic, a rule-based eval metric can
+check that the insight's cited figures actually exist in the summary.

@@ -5,8 +5,9 @@ knowledge base, analyses a user's training history, and helps coaches with
 multi-step questions through a tool-calling agent — with guardrails for a
 health-adjacent context.
 
-> **Status:** Phase 0 complete (scaffold, config, gateway client).
-> Features 1–4 land in subsequent phases.
+> **Status:** Feature 1 (knowledge RAG + guardrails) and Feature 2 (workout
+> history analysis) complete. Feature 3 (coach-assist agent) and Feature 4
+> (evaluation) land in subsequent phases.
 
 ## Time estimate
 
@@ -51,12 +52,26 @@ gitignored.
 
 ```
 src/app/
-  config.py        # env-driven settings (pydantic-settings)
-  main.py          # FastAPI entrypoint
-  llm/client.py    # async gateway wrapper + token/cost accounting
-knowledge-base/    # 20 markdown fitness documents
-sample-data/       # 3 months of workout history for 2 users
+  config.py           # env-driven settings (pydantic-settings)
+  main.py             # FastAPI entrypoint
+  llm/client.py       # async gateway wrapper + token/cost accounting
+  rag/                # Feature 1: chunking, store, ingest, grounded answers
+  guardrail/          # safety intent classifier
+  analysis/           # Feature 2: taxonomy, analytics, insight, user repository
+  api/                # routes + request/response schemas
+knowledge-base/       # 20 markdown fitness documents
+sample-data/          # 3 months of workout history for 2 users
 ```
+
+## Endpoints
+
+| Endpoint | Feature | Purpose |
+|---|---|---|
+| `POST /ask` | 1 | Answer a fitness question from the knowledge base, with citations. Refuses out-of-scope and medical-advice questions. |
+| `POST /analyze` | 2 | Analyse a user's workout history (`user_id` or inline `workouts`) and answer a question about it, backed by computed stats. |
+| `GET /health` | — | Liveness + indexed-chunk count. |
+
+Interactive API docs at `/docs` when the server is running.
 
 ## Documents
 
