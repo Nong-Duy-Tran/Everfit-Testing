@@ -169,8 +169,52 @@ layer, not a similarity cutoff. Banked as the central constraint for Phase 2.
   matches config, so a gateway model swap fails at ingest with a clear message
   rather than as a silent dimension mismatch at query time.
 
-### Guardrails reflection
+---
 
-_To be completed in Phase 2 (guardrails implementation). The Phase 1 threshold
-finding above — that unsafe questions are topically in-scope and score like
-legitimate ones — is the starting point._
+## Phase 2 — guardrails
+
+### Guardrails reflection (the reflection the brief asks for)
+
+**Did AI tools help or hinder my thinking on what the system should refuse?**
+Both, in a useful order. The *hinder* came first and was caught in Phase 1: the
+naive design the AI reached for would have leaned on the relevance threshold to
+do double duty as a safety filter — refuse "what's the weather?" and "how do I
+rehab my rotator cuff?" with the same mechanism. That is the trap. It only
+surfaced because I measured similarity scores on adversarial inputs and saw the
+rehab question (0.434) land on top of the legitimate protein question (0.439).
+The AI's tidy instinct — "one refusal path for everything not answerable" — was
+exactly wrong, because an unsafe question *is* answerable and *is* on-topic.
+
+The *help* came once the problem was framed correctly. I asked whether the
+gateway model could separate prevention from treatment on the genuinely hard
+pairs, and probed it on ten borderline cases before writing any classifier code
+("avoid shoulder pain" vs "shoulder clicks and hurts"; normal DOMS vs "felt a
+pop"). 10/10. That measurement is what justified an LLM intent classifier over a
+keyword list, rather than me asserting it would work.
+
+**Was there a moment the AI-generated refusal logic was too broad, too narrow,
+or missed the point?** Yes — the default failure behaviour. My first instinct on
+"what if the classifier returns malformed JSON?" was to fail *closed* (refuse),
+because that reads as the safe choice. It is the wrong choice here: the brief's
+sharpest guardrail requirement is *not over-blocking*, and failing closed on
+every transient parse error would refuse legitimate questions for a
+model/gateway hiccup. The system now fails **open** — a malformed classification
+allows the question, which is then answered by the grounded, cited pipeline that
+has its own out-of-scope gate. That is a deliberate trade of a little safety
+recall for far fewer false refusals, and it is documented as such rather than
+hidden.
+
+### Design choices worth noting
+
+- **Safety runs before relevance, and concurrently with embedding.** Ordering is
+  a correctness requirement (a medical question passes the similarity gate);
+  running the classifier concurrently with the query embedding via
+  `asyncio.gather` means it adds no latency on the happy path. A test asserts the
+  ordering directly (`test_guardrail_runs_before_relevance_check`).
+- **Refusals redirect, not dead-end.** Each names the right professional
+  (physio / doctor / registered dietitian) and points back to what the assistant
+  can still help with — verified by a test that every refusal message contains
+  one of those referrals.
+- **Two adversarial cases are carried into the eval set**, one guarding each
+  direction of the boundary: an allow-case that must not be blocked, and a
+  diagnosis-phrased-as-training case that must be. See `docs/GUARDRAILS.md`.
