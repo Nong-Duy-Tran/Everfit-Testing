@@ -100,12 +100,77 @@ the RAG pipeline" prompt, each phase is scoped to a layer with an explicit
 verification step, so errors surface against a running system rather than
 accumulating.
 
-### Guardrails reflection
-
-_To be completed in Phase 2 (guardrails implementation)._
-
 ---
 
-## Phase 1+ — _in progress_
+## Phase 1 — RAG pipeline
 
-_Appended as each phase completes._
+### Rejected suggestion (twice): retrieval-time diversity reranking
+
+This is the phase's main story, and it is a case of the AI proposing a fix,
+measuring it, and being talked out of it by the data — across two rounds.
+
+**The problem.** Section-level chunks are small, so one document can win every
+retrieval slot. "Should I deload **or eat more**?" returned five `10-deload`
+sections and never surfaced nutrition or recovery — the model literally could
+not answer half the question.
+
+**Round 1 — the AI proposed a per-document cap.** I added a `max_chunks_per_doc`
+setting: over-fetch, then keep at most N sections per document. Measured it at
+N=2/3 against the real index. N=3 fixed the crowding with no regression on
+single-topic queries, and I set it as the default with a confident comment.
+
+**The user pushed back with one question:** *"what if the user asks 'tell me all
+about deload'?"* I tested it instead of defending the design, and the cap was
+wrong — it evicted two genuine deload sections to make room for an off-topic
+deadlift chunk. So the cap traded one failure (multi-topic) for another
+(single-topic deep-dive).
+
+**Round 2 — the AI proposed MMR** as the "proper" version of the same idea:
+penalise a candidate by its similarity to already-selected chunks, comparing
+chunk-to-chunk instead of counting filenames. Before writing it into the store,
+I simulated it over the real vectors at several λ values. It **also failed**:
+λ=0.85 nailed the deep-dive and failed the multi-topic question; λ=0.7 did the
+reverse. No single λ is right for both.
+
+**The conclusion, and why it's the honest one.** Both questions produce a nearly
+identical all-deload candidate list. The signal that separates them — *does the
+user want one topic exhaustively, or several topics together?* — is **query
+intent**, which lives in the question, not in the chunks or their vectors. No
+retrieval-time reranking can recover a signal that was never in the retrieval
+scores. I reverted to plain top-k, kept the whole investigation, and it becomes
+the headline finding in EVALUATION.md: the real fix is query decomposition,
+deferred as out of scope for Feature 1.
+
+**The transferable lesson:** the AI defaults to solving a retrieval-shaped
+problem with a retrieval-shaped tool, and will keep escalating within that frame
+(cap → MMR) rather than stepping out of it. A single concrete counter-example
+from the user collapsed two rounds of plausible engineering. Measuring the
+proposal on a real adversarial query — before committing to it — is what caught
+both.
+
+### Correction: threshold cannot double as a medical guardrail
+
+While tuning the out-of-scope cutoff, I checked adversarial inputs against real
+ones and found that "How do I rehab my torn rotator cuff?" scores **0.434** —
+statistically identical to the legitimate "How much protein should I eat?" at
+0.439. The naive design would have leaned on the relevance threshold to catch
+both out-of-scope *and* unsafe questions. It can't: a medical question is
+*topically* on-scope. Refusal for safety has to be a separate intent-classifying
+layer, not a similarity cutoff. Banked as the central constraint for Phase 2.
+
+### What the AI got right without correction
+
+- **Measure before choosing.** The chunking strategy was picked only after
+  counting the corpus (111 sections, 18-152 words), which is what ruled out
+  fixed-size chunking — it would have split the Epley/Brzycki formulas and the
+  %1RM table. The title-prefix-per-chunk decision came from noticing that a bare
+  "Common Mistakes" body is near-identical across bench/squat/deadlift.
+- **Fail loud at the seams.** Ingest asserts the returned embedding dimension
+  matches config, so a gateway model swap fails at ingest with a clear message
+  rather than as a silent dimension mismatch at query time.
+
+### Guardrails reflection
+
+_To be completed in Phase 2 (guardrails implementation). The Phase 1 threshold
+finding above — that unsafe questions are topically in-scope and score like
+legitimate ones — is the starting point._
