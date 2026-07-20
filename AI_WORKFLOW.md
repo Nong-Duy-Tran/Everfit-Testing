@@ -325,3 +325,47 @@ reported a cost far below reality, which matters because cost-per-query is a
 graded deliverable. Fixed by adding `Usage.merge()` and folding each tool's usage
 into the agent total at the tool boundary. Caught by reading the numbers, not by
 a failing test — the kind of error that ships quietly if you trust the plumbing.
+
+---
+
+## Phase 5 — Feature 4: evaluation
+
+### The evaluation caught a bug in the evaluation, not just the system
+
+The most useful moment of this phase was a faithfulness score of 1/5 on
+`analysis-4`. My first instinct on seeing a red cell is "the system is wrong."
+It wasn't — I read the answer and the judge's reasoning, and the assistant's
+numbers (1.34 push:pull, 17-19% e1RM gains) were all correct and grounded. The
+judge flagged a contradiction because *my reference* claimed User A was
+"balanced," while the data showed a mild push-lean the assistant correctly named.
+The judge did its job; my reference was too rosy. I corrected the reference to
+match the data rather than editing the score, and re-ran.
+
+The transferable lesson: a failing eval case has two suspects — the system and
+the eval — and reference-based LLM judging makes the eval itself a frequent
+culprit. Reading the judge's *reasoning* before trusting its *score* is what
+separated the two.
+
+### Two honest failures kept, not smoothed away
+
+Re-running surfaced two genuine issues I deliberately left red rather than tuning
+to green (a submission where everything passes reads as a weak test set):
+
+- **A real system weakness** — the insight layer over-dramatizes a basically-fine
+  1.34 push:pull ratio as "unsustainable" and "injury risk." Root cause: the
+  model interprets ratios with no sense of what's normal. Fix: severity bands in
+  the analytics layer.
+- **An eval-methodology weakness** — the reference-based judge penalized the
+  agent for citing *correct* computed numbers, because it can't see the tool
+  output and treats specificity as hallucination. Fix: feed the judge the actual
+  grounding context.
+
+### The surprise: LLM-judge non-determinism
+
+The same system scored `agent-1` faithfulness 5 on one run and 3 on the next.
+This is the strongest argument in the whole project for the deterministic
+rule-based metrics carrying the load: `status_correct`, `values_grounded`, and
+`attribution_present` returned identical results both times, while the judge
+wandered. The judge earns its place by catching semantic issues the rules can't
+(tone, over-dramatization), but a single judge sample is evidence, not proof —
+documented in EVALUATION.md as "sample 3× and average" for next iteration.
