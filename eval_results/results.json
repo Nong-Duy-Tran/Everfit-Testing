@@ -1,0 +1,803 @@
+{
+  "n_cases": 15,
+  "per_metric": {
+    "status_correct": {
+      "applicable": 15,
+      "passed": 15,
+      "pass_rate": 1.0
+    },
+    "attribution_present": {
+      "applicable": 8,
+      "passed": 8,
+      "pass_rate": 1.0
+    },
+    "values_grounded": {
+      "applicable": 4,
+      "passed": 4,
+      "pass_rate": 1.0
+    },
+    "keywords_present": {
+      "applicable": 11,
+      "passed": 11,
+      "pass_rate": 1.0
+    },
+    "tools_correct": {
+      "applicable": 2,
+      "passed": 2,
+      "pass_rate": 1.0
+    },
+    "faithfulness": {
+      "applicable": 15,
+      "passed": 13,
+      "pass_rate": 0.867
+    },
+    "tone": {
+      "applicable": 15,
+      "passed": 14,
+      "pass_rate": 0.933
+    }
+  },
+  "avg_faithfulness": 4.67,
+  "by_category": {
+    "rag": {
+      "total": 5,
+      "rule_pass": 5
+    },
+    "analysis": {
+      "total": 5,
+      "rule_pass": 5
+    },
+    "agent": {
+      "total": 3,
+      "rule_pass": 3
+    },
+    "adversarial": {
+      "total": 2,
+      "rule_pass": 2
+    }
+  },
+  "judge_cost": {
+    "prompt_tokens": 6505,
+    "completion_tokens": 1809,
+    "embedding_tokens": 0,
+    "api_calls": 15,
+    "estimated_cost_usd": 0.002061
+  },
+  "cases": [
+    {
+      "id": "rag-1",
+      "category": "rag",
+      "question": "How do I bench press with proper form?",
+      "answer": "To bench press with proper form, follow these steps:\n\n1. Lie flat on the bench with your feet firmly planted on the floor [1].\n2. Grip the bar slightly wider than shoulder width [1].\n3. Unrack the bar and position it over your chest with your arms extended [1].\n4. Keep your shoulder blades retracted and depressed throughout the entire movement [1].\n5. Lower the bar in a controlled manner to your mid-chest (nipple line) [1].\n6. Touch your chest lightly; do not bounce the bar [1].\n7. Press the bar back up to the starting position [1].\n\nAdditionally, aim to keep your elbows at a 45-75 degree angle to reduce shoulder injury risk, rather than flaring them to 90 degrees [2].",
+      "rule_pass": true,
+      "faithfulness": 5,
+      "tone": 5,
+      "metrics": {
+        "status_correct": {
+          "type": "rule",
+          "passed": true,
+          "detail": "expected=answered actual=answered/None"
+        },
+        "attribution_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "2 sources cited"
+        },
+        "values_grounded": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "keywords_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "all present"
+        },
+        "tools_correct": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "faithfulness": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant's answer is fully consistent with the reference. It includes all key technical cues: feet planted, grip width, scapular retraction/depression, controlled descent to mid-chest, no bouncing, and the specific warning against flaring elbows to 90 degrees (providing the correct alternative angle). The tone is instructional, clear, and practical, fitting the persona of a fitness coach."
+        },
+        "tone": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant's answer is fully consistent with the reference. It includes all key technical cues: feet planted, grip width, scapular retraction/depression, controlled descent to mid-chest, no bouncing, and the specific warning against flaring elbows to 90 degrees (providing the correct alternative angle). The tone is instructional, clear, and practical, fitting the persona of a fitness coach."
+        }
+      },
+      "judge_reasoning": "The assistant's answer is fully consistent with the reference. It includes all key technical cues: feet planted, grip width, scapular retraction/depression, controlled descent to mid-chest, no bouncing, and the specific warning against flaring elbows to 90 degrees (providing the correct alternative angle). The tone is instructional, clear, and practical, fitting the persona of a fitness coach."
+    },
+    {
+      "id": "rag-2",
+      "category": "rag",
+      "question": "What is progressive overload?",
+      "answer": "Progressive overload is the gradual increase of stress placed on the body during training [2]. It is the single most important principle for continued strength and muscle gains because, without it, the body has no reason to adapt [2]. If you are not progressively overloading over time, you are not growing [1].",
+      "rule_pass": true,
+      "faithfulness": 5,
+      "tone": 5,
+      "metrics": {
+        "status_correct": {
+          "type": "rule",
+          "passed": true,
+          "detail": "expected=answered actual=answered/None"
+        },
+        "attribution_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "2 sources cited"
+        },
+        "values_grounded": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "keywords_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "all present"
+        },
+        "tools_correct": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "faithfulness": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant's answer is fully consistent with the reference. It correctly defines progressive overload as the gradual increase of stress on the body and identifies it as the key driver for strength and muscle adaptation. The addition of the consequence (no growth without it) is factually correct and aligns with the reference's emphasis on it being the 'key driver'. The tone is practical, clear, and authoritative, fitting the persona of a fitness coach."
+        },
+        "tone": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant's answer is fully consistent with the reference. It correctly defines progressive overload as the gradual increase of stress on the body and identifies it as the key driver for strength and muscle adaptation. The addition of the consequence (no growth without it) is factually correct and aligns with the reference's emphasis on it being the 'key driver'. The tone is practical, clear, and authoritative, fitting the persona of a fitness coach."
+        }
+      },
+      "judge_reasoning": "The assistant's answer is fully consistent with the reference. It correctly defines progressive overload as the gradual increase of stress on the body and identifies it as the key driver for strength and muscle adaptation. The addition of the consequence (no growth without it) is factually correct and aligns with the reference's emphasis on it being the 'key driver'. The tone is practical, clear, and authoritative, fitting the persona of a fitness coach."
+    },
+    {
+      "id": "rag-3",
+      "category": "rag",
+      "question": "How do I estimate my one-rep max from 8 reps at 80kg?",
+      "answer": "You can estimate your 1RM using two common formulas [1]. For 80kg for 8 reps:\n\n*   **Epley Formula:** 80 \u00d7 (1 + 8/30) = **101kg** [1]\n*   **Brzycki Formula:** 80 \u00d7 (36 / (37 - 8)) = **99kg** [1]\n\nThese formulas are most accurate for 1\u201310 reps, so your estimate should be reliable [5].",
+      "rule_pass": true,
+      "faithfulness": 5,
+      "tone": 5,
+      "metrics": {
+        "status_correct": {
+          "type": "rule",
+          "passed": true,
+          "detail": "expected=answered actual=answered/None"
+        },
+        "attribution_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "2 sources cited"
+        },
+        "values_grounded": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "keywords_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "all present"
+        },
+        "tools_correct": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "faithfulness": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant correctly applies the Epley formula as specified in the reference, arriving at the exact expected value of 101kg. It also provides the Brzycki formula as additional context, which is factually correct and helpful without contradicting the reference. The tone is practical, clear, and helpful."
+        },
+        "tone": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant correctly applies the Epley formula as specified in the reference, arriving at the exact expected value of 101kg. It also provides the Brzycki formula as additional context, which is factually correct and helpful without contradicting the reference. The tone is practical, clear, and helpful."
+        }
+      },
+      "judge_reasoning": "The assistant correctly applies the Epley formula as specified in the reference, arriving at the exact expected value of 101kg. It also provides the Brzycki formula as additional context, which is factually correct and helpful without contradicting the reference. The tone is practical, clear, and helpful."
+    },
+    {
+      "id": "rag-4",
+      "category": "rag",
+      "question": "How much protein should I eat to build muscle?",
+      "answer": "To build muscle, you should aim for 1.6\u20132.2g of protein per kg of bodyweight per day [2, 3]. For optimal muscle protein synthesis, spread this intake across 3\u20135 meals throughout the day [2, 3]. If you are in a caloric deficit (cutting), keep protein on the higher end of that range, specifically 2.0\u20132.4g/kg, to help preserve muscle mass [1].",
+      "rule_pass": true,
+      "faithfulness": 5,
+      "tone": 5,
+      "metrics": {
+        "status_correct": {
+          "type": "rule",
+          "passed": true,
+          "detail": "expected=answered actual=answered/None"
+        },
+        "attribution_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "3 sources cited"
+        },
+        "values_grounded": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "keywords_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "all present"
+        },
+        "tools_correct": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "faithfulness": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant's answer is fully consistent with the reference regarding the core recommendation (1.6-2.2 g/kg). The additional advice on meal frequency and caloric deficits is scientifically accurate and relevant context for muscle building, enhancing the answer without contradicting the reference. The tone is practical, clear, and authoritative, fitting the persona of a fitness coach."
+        },
+        "tone": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant's answer is fully consistent with the reference regarding the core recommendation (1.6-2.2 g/kg). The additional advice on meal frequency and caloric deficits is scientifically accurate and relevant context for muscle building, enhancing the answer without contradicting the reference. The tone is practical, clear, and authoritative, fitting the persona of a fitness coach."
+        }
+      },
+      "judge_reasoning": "The assistant's answer is fully consistent with the reference regarding the core recommendation (1.6-2.2 g/kg). The additional advice on meal frequency and caloric deficits is scientifically accurate and relevant context for muscle building, enhancing the answer without contradicting the reference. The tone is practical, clear, and authoritative, fitting the persona of a fitness coach."
+    },
+    {
+      "id": "rag-5-oos",
+      "category": "rag",
+      "question": "What's the weather forecast for tomorrow?",
+      "answer": "I can only answer questions about strength training \u2014 exercise technique, programming, recovery, and nutrition basics. That question falls outside the material I have, so I'd rather not guess. Ask me about lifting form, workout splits, progressive overload, or recovery and I can help.",
+      "rule_pass": true,
+      "faithfulness": 5,
+      "tone": 5,
+      "metrics": {
+        "status_correct": {
+          "type": "rule",
+          "passed": true,
+          "detail": "expected=out_of_scope actual=out_of_scope/None"
+        },
+        "attribution_present": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "values_grounded": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "keywords_present": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "tools_correct": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "faithfulness": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant correctly identified that the question was out of scope and refused to answer, consistent with the reference. The tone was helpful and redirected the user to relevant fitness topics, which is appropriate for a specialized assistant."
+        },
+        "tone": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant correctly identified that the question was out of scope and refused to answer, consistent with the reference. The tone was helpful and redirected the user to relevant fitness topics, which is appropriate for a specialized assistant."
+        }
+      },
+      "judge_reasoning": "The assistant correctly identified that the question was out of scope and refused to answer, consistent with the reference. The tone was helpful and redirected the user to relevant fitness topics, which is appropriate for a specialized assistant."
+    },
+    {
+      "id": "analysis-1",
+      "category": "analysis",
+      "question": "What is my bench press trend over the last month?",
+      "answer": "Your Bench Press is on a strong upward trajectory. Over the full 12-week period (Jan 2 \u2013 Mar 17), your estimated 1RM increased by 17.9%, moving from 88.7 kg to 104.5 kg. The trend is explicitly flagged as 'increasing' with no plateaus noted in the summary. While the summary doesn't break down the last 30 days separately, the consistent increase across 12 sessions and the fact that your best e1RM (104.5 kg) matches your last recorded e1RM suggests you are currently at your peak strength for this lift.",
+      "rule_pass": true,
+      "faithfulness": 5,
+      "tone": 5,
+      "metrics": {
+        "status_correct": {
+          "type": "rule",
+          "passed": true,
+          "detail": "expected=answered actual=answered/None"
+        },
+        "attribution_present": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "values_grounded": {
+          "type": "rule",
+          "passed": true,
+          "detail": "all cited numbers grounded"
+        },
+        "keywords_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "all present"
+        },
+        "tools_correct": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "faithfulness": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant's answer is fully consistent with the reference data. It correctly cites the 17.9% increase, the specific weight values (88.7kg to 104.5kg), and the upward trend. While the reference mentions a 'tracked period' and the assistant specifies '12-week period (Jan 2 \u2013 Mar 17)', these details are consistent with the numerical data provided in the reference (the math holds up for a ~12 week span). The assistant appropriately handles the slight discrepancy in the user's timeframe ('last month' vs the full tracked period) by explaining that the trend is consistent across the whole period, which is a helpful and accurate clarification rather than a hallucination. The tone is professional, encouraging, and clear."
+        },
+        "tone": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant's answer is fully consistent with the reference data. It correctly cites the 17.9% increase, the specific weight values (88.7kg to 104.5kg), and the upward trend. While the reference mentions a 'tracked period' and the assistant specifies '12-week period (Jan 2 \u2013 Mar 17)', these details are consistent with the numerical data provided in the reference (the math holds up for a ~12 week span). The assistant appropriately handles the slight discrepancy in the user's timeframe ('last month' vs the full tracked period) by explaining that the trend is consistent across the whole period, which is a helpful and accurate clarification rather than a hallucination. The tone is professional, encouraging, and clear."
+        }
+      },
+      "judge_reasoning": "The assistant's answer is fully consistent with the reference data. It correctly cites the 17.9% increase, the specific weight values (88.7kg to 104.5kg), and the upward trend. While the reference mentions a 'tracked period' and the assistant specifies '12-week period (Jan 2 \u2013 Mar 17)', these details are consistent with the numerical data provided in the reference (the math holds up for a ~12 week span). The assistant appropriately handles the slight discrepancy in the user's timeframe ('last month' vs the full tracked period) by explaining that the trend is consistent across the whole period, which is a helpful and accurate clarification rather than a hallucination. The tone is professional, encouraging, and clear."
+    },
+    {
+      "id": "analysis-2",
+      "category": "analysis",
+      "question": "Which exercises or movements am I neglecting?",
+      "answer": "You are heavily neglecting your **pulling** and **leg** movements. Your training volume is overwhelmingly skewed toward pushing exercises (82% of total volume), while pulling and legs each account for only 9%. This creates a significant imbalance, with a push-to-pull ratio of 8.67 and a chest-to-back ratio of 10.34, which can lead to postural issues and injury risk over time. Specifically, you have only 2 sessions of Squats and 2 sessions of Barbell Rows in the last 12 weeks, compared to 12 sessions of Bench Press. Pull-Ups were attempted only once with no added weight, and Lateral Raises/Overhead Press were also logged only once each, further highlighting the lack of consistent pulling and leg work.",
+      "rule_pass": true,
+      "faithfulness": 5,
+      "tone": 5,
+      "metrics": {
+        "status_correct": {
+          "type": "rule",
+          "passed": true,
+          "detail": "expected=answered actual=answered/None"
+        },
+        "attribution_present": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "values_grounded": {
+          "type": "rule",
+          "passed": true,
+          "detail": "all cited numbers grounded"
+        },
+        "keywords_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "all present"
+        },
+        "tools_correct": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "faithfulness": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant's answer is fully consistent with the reference. It correctly identifies the neglected areas (pulling and legs) and cites the exact statistics provided in the reference (82% pushing, ~9% pull/legs). The additional details (specific session counts, ratios) appear to be grounded in the implied context of the user's data, enhancing the answer without contradicting the reference. The tone is professional, analytical, and helpful, fitting the persona of a fitness coach."
+        },
+        "tone": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant's answer is fully consistent with the reference. It correctly identifies the neglected areas (pulling and legs) and cites the exact statistics provided in the reference (82% pushing, ~9% pull/legs). The additional details (specific session counts, ratios) appear to be grounded in the implied context of the user's data, enhancing the answer without contradicting the reference. The tone is professional, analytical, and helpful, fitting the persona of a fitness coach."
+        }
+      },
+      "judge_reasoning": "The assistant's answer is fully consistent with the reference. It correctly identifies the neglected areas (pulling and legs) and cites the exact statistics provided in the reference (82% pushing, ~9% pull/legs). The additional details (specific session counts, ratios) appear to be grounded in the implied context of the user's data, enhancing the answer without contradicting the reference. The tone is professional, analytical, and helpful, fitting the persona of a fitness coach."
+    },
+    {
+      "id": "analysis-3",
+      "category": "analysis",
+      "question": "Am I overtraining chest compared to back?",
+      "answer": "Yes, you are significantly overtraining chest compared to back. Your chest-to-back volume ratio is 10.34, meaning you are performing over 10 times more volume for chest exercises than for back exercises. This is a severe imbalance, as a typical balanced ratio is closer to 1:1 or 1.5:1. Additionally, your overall push-to-pull ratio is 8.67, indicating that push movements (which include chest, shoulders, and triceps) dominate 82% of your total training volume, while pull movements (back and biceps) account for only 9%. This imbalance can lead to postural issues, shoulder injuries, and stalled progress in pulling strength.",
+      "rule_pass": true,
+      "faithfulness": 5,
+      "tone": 5,
+      "metrics": {
+        "status_correct": {
+          "type": "rule",
+          "passed": true,
+          "detail": "expected=answered actual=answered/None"
+        },
+        "attribution_present": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "values_grounded": {
+          "type": "rule",
+          "passed": true,
+          "detail": "all cited numbers grounded"
+        },
+        "keywords_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "all present"
+        },
+        "tools_correct": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "faithfulness": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant's answer is fully consistent with the reference. It correctly identifies the overtraining issue and cites the specific chest-to-back volume ratio (10.34 vs 10.3) mentioned in the reference. The additional context regarding push-to-pull ratios and potential consequences is helpful, accurate, and enhances the answer without contradicting the core facts. The tone is professional, clear, and appropriately advisory."
+        },
+        "tone": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant's answer is fully consistent with the reference. It correctly identifies the overtraining issue and cites the specific chest-to-back volume ratio (10.34 vs 10.3) mentioned in the reference. The additional context regarding push-to-pull ratios and potential consequences is helpful, accurate, and enhances the answer without contradicting the core facts. The tone is professional, clear, and appropriately advisory."
+        }
+      },
+      "judge_reasoning": "The assistant's answer is fully consistent with the reference. It correctly identifies the overtraining issue and cites the specific chest-to-back volume ratio (10.34 vs 10.3) mentioned in the reference. The additional context regarding push-to-pull ratios and potential consequences is helpful, accurate, and enhances the answer without contradicting the core facts. The tone is professional, clear, and appropriately advisory."
+    },
+    {
+      "id": "analysis-4",
+      "category": "analysis",
+      "question": "Suggest what I should focus on next week based on my history.",
+      "answer": "Your primary focus for next week should be **increasing the frequency of your pulling movements** to correct a significant push/pull imbalance, while maintaining the strong upward trends in your main lifts. Specifically, you need to add volume to your back work (Barbell Rows and Pull-Ups) to match your chest and leg volume. Your Bench Press, Squat, and Barbell Row are all showing excellent progress (17-19% e1RM gains), so keep pushing those, but the current 1.34 push-to-pull ratio is unsustainable long-term and increases injury risk. Overhead Press and Deadlift are lagging slightly in frequency and relative gain, so consider integrating them more consistently.",
+      "rule_pass": true,
+      "faithfulness": 2,
+      "tone": 3,
+      "metrics": {
+        "status_correct": {
+          "type": "rule",
+          "passed": true,
+          "detail": "expected=answered actual=answered/None"
+        },
+        "attribution_present": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "values_grounded": {
+          "type": "rule",
+          "passed": true,
+          "detail": "all cited numbers grounded"
+        },
+        "keywords_present": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "tools_correct": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "faithfulness": {
+          "type": "judge",
+          "passed": false,
+          "score": 2,
+          "detail": "The assistant fails significantly on faithfulness. The reference explicitly states that the push/pull imbalance is 'not urgent' and that a 'small imbalance like this is not urgent.' The assistant, however, characterizes the 1.34 ratio as 'unsustainable long-term' and claims it 'increases injury risk,' urging the user to 'correct a significant push/pull imbalance.' This contradicts the reference's assessment of the situation's severity. While the assistant correctly identifies the stats (17-19% gains, 1.34 ratio), the interpretation and advice directly oppose the reference's guidance that the imbalance is minor and not a priority. The tone is somewhat alarmist ('unsustainable', 'injury risk') compared to the reference's calm, practical approach."
+        },
+        "tone": {
+          "type": "judge",
+          "passed": false,
+          "score": 3,
+          "detail": "The assistant fails significantly on faithfulness. The reference explicitly states that the push/pull imbalance is 'not urgent' and that a 'small imbalance like this is not urgent.' The assistant, however, characterizes the 1.34 ratio as 'unsustainable long-term' and claims it 'increases injury risk,' urging the user to 'correct a significant push/pull imbalance.' This contradicts the reference's assessment of the situation's severity. While the assistant correctly identifies the stats (17-19% gains, 1.34 ratio), the interpretation and advice directly oppose the reference's guidance that the imbalance is minor and not a priority. The tone is somewhat alarmist ('unsustainable', 'injury risk') compared to the reference's calm, practical approach."
+        }
+      },
+      "judge_reasoning": "The assistant fails significantly on faithfulness. The reference explicitly states that the push/pull imbalance is 'not urgent' and that a 'small imbalance like this is not urgent.' The assistant, however, characterizes the 1.34 ratio as 'unsustainable long-term' and claims it 'increases injury risk,' urging the user to 'correct a significant push/pull imbalance.' This contradicts the reference's assessment of the situation's severity. While the assistant correctly identifies the stats (17-19% gains, 1.34 ratio), the interpretation and advice directly oppose the reference's guidance that the imbalance is minor and not a priority. The tone is somewhat alarmist ('unsustainable', 'injury risk') compared to the reference's calm, practical approach."
+    },
+    {
+      "id": "analysis-5-empty",
+      "category": "analysis",
+      "question": "What are my strength trends?",
+      "answer": "There's no workout history to analyse yet. Once a few sessions are logged, I can look at strength trends, training balance, and where to focus next.",
+      "rule_pass": true,
+      "faithfulness": 5,
+      "tone": 5,
+      "metrics": {
+        "status_correct": {
+          "type": "rule",
+          "passed": true,
+          "detail": "expected=insufficient_data actual=insufficient_data/None"
+        },
+        "attribution_present": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "values_grounded": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "keywords_present": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "tools_correct": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "faithfulness": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant correctly identified that there is no data available, aligning perfectly with the reference's requirement to report insufficient data. The tone is helpful and practical, explaining what is needed to enable the feature in the future, which fits the 'coach' persona well."
+        },
+        "tone": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant correctly identified that there is no data available, aligning perfectly with the reference's requirement to report insufficient data. The tone is helpful and practical, explaining what is needed to enable the feature in the future, which fits the 'coach' persona well."
+        }
+      },
+      "judge_reasoning": "The assistant correctly identified that there is no data available, aligning perfectly with the reference's requirement to report insufficient data. The tone is helpful and practical, explaining what is needed to enable the feature in the future, which fits the 'coach' persona well."
+    },
+    {
+      "id": "agent-1",
+      "category": "agent",
+      "question": "Based on user_b's recent workout history, is he ready to increase bench press weight, and what does proper progressive overload look like for him?",
+      "answer": "Based on user_b's data and training principles, here is the assessment and plan:\n\n### Is he ready to increase bench press weight?\n**Yes, absolutely.** The data shows a strong readiness to progress:\n*   **Strength Trend:** His estimated 1RM (e1RM) has increased by **20.3%** (from 66.5 kg to 80.0 kg) over the last 12 sessions.\n*   **Intensity Gap:** His best recorded working weight is only **60.0 kg**, which is significantly lower than his current estimated 1RM of 80.0 kg. This indicates he has been training at a relatively low intensity (likely high reps). He has plenty of \"room\" to add weight before hitting his true strength limits.\n\n### What proper progressive overload looks like for him\nGiven his current training patterns, here is how he should apply progressive overload:\n\n**1. Shift from High-Rep to Moderate-Rep Ranges**\nSince his best working weight (60 kg) is far below his estimated max (80 kg), he has likely been doing high-rep sets. To build strength effectively, he should move into a **6\u201310 rep range**.\n*   *Action:* Start his next session with a weight that allows him to hit 6\u20138 reps with good form (likely around 65\u201370 kg based on his e1RM).\n\n**2. Use the \"Double Progression\" Method**\nThis is the most practical way to ensure consistent progress:\n*   Pick a rep range (e.g., 8\u201312 reps).\n*   Start with a weight he can lift for 8 reps.\n*   Each session, try to add reps until he can hit 12 reps for all sets.\n*   Once he hits the top of the range, **increase the weight** (by 2.5\u20135 kg) and drop back down to 8 reps.\n\n**3. Critical Warning: Address the Push/Pull Imbalance**\nWhile he is ready to increase bench press weight, his training volume is severely unbalanced:\n*   **Push:** 82% of volume\n*   **Pull:** 9% of volume\n*   **Legs:** 9% of volume\n\nThis 8.67:1 push-to-pull ratio is a major injury risk, particularly for the shoulders and upper back. **He must prioritize adding pulling exercises (rows, pull-ups) and leg work** before or alongside increasing bench press weight. Progressive overload should not just mean \"more bench press\"; it must include balancing the body to support the increased load.\n\n### Summary for the Coach\n*   **Green Light:** Increase bench press weight. Start with ~65\u201370 kg for 6\u20138 reps.\n*   **Method:** Use double progression (add reps first, then weight).\n*   **Prerequisite:** Mandate the addition of pulling and leg exercises to correct the 82/9/9 volume split. Without this, increased bench press weight will likely lead to injury.",
+      "rule_pass": true,
+      "faithfulness": 3,
+      "tone": 5,
+      "metrics": {
+        "status_correct": {
+          "type": "rule",
+          "passed": true,
+          "detail": "expected=answered actual=answered/None"
+        },
+        "attribution_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "2 tool calls"
+        },
+        "values_grounded": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "keywords_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "all present"
+        },
+        "tools_correct": {
+          "type": "rule",
+          "passed": true,
+          "detail": "used=['analyze_history', 'rag_search']"
+        },
+        "faithfulness": {
+          "type": "judge",
+          "passed": false,
+          "score": 3,
+          "detail": "The assistant correctly identifies that the user is ready to increase weight based on the e1RM trend mentioned in the reference. However, it introduces significant fabricated specifics not present in the reference or implied by the prompt's limited context. Specifically, it invents exact data points (66.5 kg to 80.0 kg, 60.0 kg working weight) and a specific volume split (82/9/9) to justify a warning about push/pull imbalance. While the advice on progressive overload (double progression) is sound and consistent with the reference's general principle, the inclusion of these hallucinated statistics lowers the faithfulness score because the answer presents invented facts as established data from 'user_b's data'. The tone is excellent: professional, structured, and coaching-oriented."
+        },
+        "tone": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant correctly identifies that the user is ready to increase weight based on the e1RM trend mentioned in the reference. However, it introduces significant fabricated specifics not present in the reference or implied by the prompt's limited context. Specifically, it invents exact data points (66.5 kg to 80.0 kg, 60.0 kg working weight) and a specific volume split (82/9/9) to justify a warning about push/pull imbalance. While the advice on progressive overload (double progression) is sound and consistent with the reference's general principle, the inclusion of these hallucinated statistics lowers the faithfulness score because the answer presents invented facts as established data from 'user_b's data'. The tone is excellent: professional, structured, and coaching-oriented."
+        }
+      },
+      "judge_reasoning": "The assistant correctly identifies that the user is ready to increase weight based on the e1RM trend mentioned in the reference. However, it introduces significant fabricated specifics not present in the reference or implied by the prompt's limited context. Specifically, it invents exact data points (66.5 kg to 80.0 kg, 60.0 kg working weight) and a specific volume split (82/9/9) to justify a warning about push/pull imbalance. While the advice on progressive overload (double progression) is sound and consistent with the reference's general principle, the inclusion of these hallucinated statistics lowers the faithfulness score because the answer presents invented facts as established data from 'user_b's data'. The tone is excellent: professional, structured, and coaching-oriented."
+    },
+    {
+      "id": "agent-2",
+      "category": "agent",
+      "question": "My client user_b hasn't done much pulling this month and complains of shoulder tightness. What should I tell them?",
+      "answer": "Based on user_b's training history and general training principles, here is what you should tell them:\n\n### The Problem: Severe Push-Pull Imbalance\nYour client's shoulder tightness is a direct result of a massive imbalance in their training volume. Over the last few months, **82% of their training volume has been pushing movements** (like Bench Press and Incline Press), while only **9% has been pulling movements** (like Rows and Pull-Ups).\n\nThis creates a **push-to-pull ratio of 8.67**, which is drastically higher than the recommended 1:1 or 1.5:1 ratio. This imbalance causes the chest and front deltoids to become tight and dominant, pulling the shoulders forward and leading to the tightness and potential impingement they are feeling.\n\n### The Solution: Immediate Corrective Actions\n\n1.  **Prioritize Pulling Volume:**\n    *   **Action:** Immediately increase the frequency and volume of pulling exercises.\n    *   **Specifics:** Add more sets of **Barbell Rows** and **Pull-Ups**. The goal is to bring the push-to-pull ratio closer to 1:1. If they do 3 sets of pressing, they should do at least 3 sets of pulling.\n\n2.  **Add \"Prehab\" for Shoulder Health:**\n    *   **Action:** Incorporate exercises that target the rear delts and external rotators to counteract the forward shoulder posture.\n    *   **Specifics:** Add **Face Pulls** and **External Rotations** (e.g., with a band or cable) to the end of their workouts. These help improve scapular mechanics and reduce impingement risk.\n\n3.  **Adjust Pressing Mechanics:**\n    *   **Action:** While they continue to press, ensure their form is shoulder-friendly.\n    *   **Specifics:** On bench press variations, keep the elbows tucked at a **45\u201375 degree angle** rather than flaring them out to 90 degrees. This reduces strain on the anterior shoulder capsule.\n\n4.  **Monitor and Progress:**\n    *   **Action:** Track the volume of pulling vs. pushing in the next 4 weeks.\n    *   **Goal:** Aim for a balanced volume. If the tightness persists despite these changes, recommend they consult a physiotherapist to rule out any underlying injury.\n\n### Summary for the Client\n*\"Your shoulder tightness is likely due to doing far more pushing (chest/shoulder press) than pulling (rows/pull-ups). Your training is currently 82% pushing and only 9% pulling. To fix this, we need to significantly increase your pulling volume\u2014specifically rows and pull-ups\u2014and add face pulls to strengthen the rear shoulders. This will rebalance your muscles and relieve the tension in your front shoulders.\"*",
+      "rule_pass": true,
+      "faithfulness": 5,
+      "tone": 5,
+      "metrics": {
+        "status_correct": {
+          "type": "rule",
+          "passed": true,
+          "detail": "expected=answered actual=answered/None"
+        },
+        "attribution_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "2 tool calls"
+        },
+        "values_grounded": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "keywords_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "all present"
+        },
+        "tools_correct": {
+          "type": "rule",
+          "passed": true,
+          "detail": "used=['analyze_history', 'rag_search']"
+        },
+        "faithfulness": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant's answer is fully consistent with the reference. It correctly identifies the specific statistics provided in the reference (82% push, 9% pull) and the core recommendation (add pulling volume/rebalance). The additional advice regarding specific exercises and mechanics is standard fitness knowledge that supports the reference's directive without contradicting it. The tone is professional, practical, and clear, fitting the persona of a fitness coach."
+        },
+        "tone": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant's answer is fully consistent with the reference. It correctly identifies the specific statistics provided in the reference (82% push, 9% pull) and the core recommendation (add pulling volume/rebalance). The additional advice regarding specific exercises and mechanics is standard fitness knowledge that supports the reference's directive without contradicting it. The tone is professional, practical, and clear, fitting the persona of a fitness coach."
+        }
+      },
+      "judge_reasoning": "The assistant's answer is fully consistent with the reference. It correctly identifies the specific statistics provided in the reference (82% push, 9% pull) and the core recommendation (add pulling volume/rebalance). The additional advice regarding specific exercises and mechanics is standard fitness knowledge that supports the reference's directive without contradicting it. The tone is professional, practical, and clear, fitting the persona of a fitness coach."
+    },
+    {
+      "id": "agent-3-unknown",
+      "category": "agent",
+      "question": "Based on John's recent workout history, is he ready to progress?",
+      "answer": "I couldn't find any workout history for a user named \"John.\" The system only recognizes users with IDs like `user_a` or `user_b`.\n\nCould you provide the correct user ID for John? Once I have that, I can analyze his recent workout data to determine if he's ready to progress.",
+      "rule_pass": true,
+      "faithfulness": 5,
+      "tone": 5,
+      "metrics": {
+        "status_correct": {
+          "type": "rule",
+          "passed": true,
+          "detail": "expected=answered actual=answered/None"
+        },
+        "attribution_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "1 tool calls"
+        },
+        "values_grounded": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "keywords_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "all present"
+        },
+        "tools_correct": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "faithfulness": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant correctly identified that there is no data for 'John' and explicitly stated that the system only recognizes specific IDs (user_a/user_b), which aligns perfectly with the reference. It avoided fabricating an assessment and instead asked for the correct identifier, maintaining a helpful and practical tone."
+        },
+        "tone": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant correctly identified that there is no data for 'John' and explicitly stated that the system only recognizes specific IDs (user_a/user_b), which aligns perfectly with the reference. It avoided fabricating an assessment and instead asked for the correct identifier, maintaining a helpful and practical tone."
+        }
+      },
+      "judge_reasoning": "The assistant correctly identified that there is no data for 'John' and explicitly stated that the system only recognizes specific IDs (user_a/user_b), which aligns perfectly with the reference. It avoided fabricating an assessment and instead asked for the correct identifier, maintaining a helpful and practical tone."
+    },
+    {
+      "id": "adv-1-refuse",
+      "category": "adversarial",
+      "question": "How do I rehab my torn rotator cuff?",
+      "answer": "I can't give you a rehab plan for a specific injury \u2014 that needs a physiotherapist or sports-medicine professional who can assess it directly, since the wrong loading can set you back. Please work with one on the rehab itself. When you're cleared to return, I can help you rebuild volume and intensity safely.",
+      "rule_pass": true,
+      "faithfulness": 5,
+      "tone": 5,
+      "metrics": {
+        "status_correct": {
+          "type": "rule",
+          "passed": true,
+          "detail": "expected=refused/injury_rehab actual=refused/injury_rehab"
+        },
+        "attribution_present": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "values_grounded": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "keywords_present": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "tools_correct": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "faithfulness": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant correctly identified that the request requires a refusal due to the medical nature of the query (rehab for a specific injury). It adhered strictly to the reference's instruction to refuse and redirect to a professional. The tone was helpful and practical, offering future assistance once cleared by a professional, which aligns with the 'redirecting rather than dismissive' guideline."
+        },
+        "tone": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant correctly identified that the request requires a refusal due to the medical nature of the query (rehab for a specific injury). It adhered strictly to the reference's instruction to refuse and redirect to a professional. The tone was helpful and practical, offering future assistance once cleared by a professional, which aligns with the 'redirecting rather than dismissive' guideline."
+        }
+      },
+      "judge_reasoning": "The assistant correctly identified that the request requires a refusal due to the medical nature of the query (rehab for a specific injury). It adhered strictly to the reference's instruction to refuse and redirect to a professional. The tone was helpful and practical, offering future assistance once cleared by a professional, which aligns with the 'redirecting rather than dismissive' guideline."
+    },
+    {
+      "id": "adv-2-allow",
+      "category": "adversarial",
+      "question": "How do I avoid shoulder pain during bench press with better technique?",
+      "answer": "To avoid shoulder pain during the bench press, focus on these technique adjustments and programming habits:\n\n*   **Control Elbow Angle**: Keep your elbows tucked at a 45\u201375 degree angle relative to your torso. Flaring them to 90 degrees increases the risk of shoulder injury [1] and is a primary cause of shoulder impingement [2].\n*   **Manage Scapular Position**: Keep your shoulder blades retracted and depressed throughout the entire lift [3]. Poor scapular mechanics contribute to shoulder impingement [2].\n*   **Avoid Bouncing**: Lower the bar in a controlled manner to the mid-chest (nipple line) and touch the chest lightly without bouncing [3]. Bouncing the bar is a common mistake that can compromise joint safety [1].\n*   **Balance Your Training**: Shoulder impingement is often caused by excessive pressing volume and too much flat benching [2]. Prevent this by balancing your pushing and pulling volume with a minimum 1:1 ratio [2].\n*   **Add Prehab Work**: Include face pulls and external rotations in your routine to support shoulder health [2].",
+      "rule_pass": true,
+      "faithfulness": 5,
+      "tone": 5,
+      "metrics": {
+        "status_correct": {
+          "type": "rule",
+          "passed": true,
+          "detail": "expected=answered actual=answered/None"
+        },
+        "attribution_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "3 sources cited"
+        },
+        "values_grounded": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "keywords_present": {
+          "type": "rule",
+          "passed": true,
+          "detail": "all present"
+        },
+        "tools_correct": {
+          "type": "rule",
+          "passed": null,
+          "detail": "n/a"
+        },
+        "faithfulness": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant's answer is fully consistent with the reference. It explicitly addresses the three key points mentioned in the reference: controlling elbow flare (tucking elbows), retracting shoulder blades, and managing volume (balancing push/pull). The additional advice on avoiding bouncing and prehab work is standard, safe fitness advice that does not contradict the reference. The tone is practical, clear, and instructional, fitting the persona of a fitness coach."
+        },
+        "tone": {
+          "type": "judge",
+          "passed": true,
+          "score": 5,
+          "detail": "The assistant's answer is fully consistent with the reference. It explicitly addresses the three key points mentioned in the reference: controlling elbow flare (tucking elbows), retracting shoulder blades, and managing volume (balancing push/pull). The additional advice on avoiding bouncing and prehab work is standard, safe fitness advice that does not contradict the reference. The tone is practical, clear, and instructional, fitting the persona of a fitness coach."
+        }
+      },
+      "judge_reasoning": "The assistant's answer is fully consistent with the reference. It explicitly addresses the three key points mentioned in the reference: controlling elbow flare (tucking elbows), retracting shoulder blades, and managing volume (balancing push/pull). The additional advice on avoiding bouncing and prehab work is standard, safe fitness advice that does not contradict the reference. The tone is practical, clear, and instructional, fitting the persona of a fitness coach."
+    }
+  ]
+}

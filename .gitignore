@@ -35,3 +35,4 @@ AI_Engineer Exercise_Everfit.pdf
 # Provided exercise materials (knowledge-base/ and sample-data/) are committed:
 # every feature needs them and the repo must be clone-and-run.
 .claude/
+!eval_results/.gitkeep
