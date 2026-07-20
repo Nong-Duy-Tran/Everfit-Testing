@@ -280,3 +280,48 @@ in `data_points_used`; it does no arithmetic. This is the brief's "aggregation
 and trend detection vs raw dump" requirement, and it has a second benefit for
 Feature 4: because the numbers are deterministic, a rule-based eval metric can
 check that the insight's cited figures actually exist in the summary.
+
+---
+
+## Phase 4 — Feature 3: coach-assist agent
+
+### The framework decision was made once, in Phase 0, and it held
+
+The brief allows a framework but asks for justification. I decided against one in
+Phase 0, and the reason was concrete rather than ideological: for two tools and a
+single level of delegation, a native function-calling loop is ~120 lines and
+keeps the tool-selection reasoning — the thing being graded — visible in our own
+code rather than behind a library's abstractions. The Phase 0 probe had already
+confirmed the gateway does native *and parallel* tool-calling, so there was no
+capability gap to paper over. Nothing in Phase 4 changed that call.
+
+### Designing the tool contract around the failure mode, not the happy path
+
+The AI's default tool implementation returns the underlying result and moves on.
+The important design decision here was the opposite: make "no usable data" a
+*loud, typed* outcome. Tools return an explicit `status` — `unknown_user`,
+`insufficient_data` — instead of an empty dict, because the failure I care about
+in an agent is not the model picking the wrong tool (that self-corrects when the
+result feeds back) but the model treating a void as an answer. The "John doesn't
+exist" case in the brief is exactly this: the agent called `analyze_history`,
+got `unknown_user`, and told the coach it had no data for John and which users it
+does have — rather than inventing a plausible assessment. That behaviour is a
+direct consequence of the status contract, and it is asserted by a test.
+
+### Registry-driven so the loop never names a tool
+
+The loop dispatches by looking tools up in a registry by name; it contains no
+reference to `rag_search` or `analyze_history`. This is what makes the brief's
+"add a third tool without rewriting agent logic" answer true rather than
+aspirational — a new tool is one `register()` call. A test spawns the loop with
+fabricated tools to prove the loop is genuinely tool-agnostic.
+
+### A correction: usage accounting was silently wrong
+
+First pass, the agent's `Usage` total captured only the planning calls, not the
+tokens spent inside `rag_search`/`analyze_history` — because `RagAnswerer` and
+`HistoryAnalyzer` each build their own internal `Usage`. The agent would have
+reported a cost far below reality, which matters because cost-per-query is a
+graded deliverable. Fixed by adding `Usage.merge()` and folding each tool's usage
+into the agent total at the tool boundary. Caught by reading the numbers, not by
+a failing test — the kind of error that ships quietly if you trust the plumbing.
