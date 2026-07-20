@@ -61,6 +61,7 @@ sample-data/       # 3 months of workout history for 2 users
 ## Documents
 
 - [`AI_WORKFLOW.md`](AI_WORKFLOW.md) — how AI tools were used, what they got wrong, and how it was corrected
+- [`docs/GUARDRAILS.md`](docs/GUARDRAILS.md) — safety refusal strategy: triggers, messages, and how over-restriction is avoided
 - `EVALUATION.md` — test set, metric results, failure analysis _(Phase 5)_
 
 ## Design decisions
