@@ -69,6 +69,35 @@ class AnalyzeResponse(BaseModel):
     usage: "UsageModel"
 
 
+class AgentRequest(BaseModel):
+    question: str = Field(
+        ...,
+        min_length=3,
+        max_length=2000,
+        description="A coaching question, possibly multi-step, possibly naming a user_id.",
+        examples=[
+            "Based on user_b's recent history, is he ready to increase bench "
+            "press weight? What does proper progressive overload look like for him?"
+        ],
+    )
+
+
+class AgentToolCall(BaseModel):
+    name: str
+    arguments: dict
+    status: str = Field(..., description="Outcome status the tool returned.")
+
+
+class AgentResponse(BaseModel):
+    answer: str
+    tool_calls: list[AgentToolCall] = Field(
+        ..., description="Tools the agent chose to call, in order, with outcomes."
+    )
+    iterations: int
+    hit_iteration_cap: bool
+    usage: "UsageModel"
+
+
 class AskResponse(BaseModel):
     status: Literal["answered", "out_of_scope", "refused"] = Field(
         ...,

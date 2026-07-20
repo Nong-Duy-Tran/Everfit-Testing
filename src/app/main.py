@@ -8,6 +8,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.analysis.repository import HistoryRepository
+from app.api.routes import agent as agent_routes
 from app.api.routes import analyze as analyze_routes
 from app.api.routes import ask as ask_routes
 from app.config import get_settings
@@ -56,8 +57,7 @@ app = FastAPI(
 
 app.include_router(ask_routes.router)
 app.include_router(analyze_routes.router)
-# Mounted in a later phase:
-#   /agent    -> Feature 3 (coach assist agent)
+app.include_router(agent_routes.router)
 
 
 @app.get("/health", tags=["ops"])
